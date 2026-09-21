@@ -237,17 +237,25 @@ serve(async (req) => {
       content: msg.role === 'user' ? sanitizeUserInput(msg.content) : msg.content,
     }));
 
-    // ---- FETCH DYNAMIC CONTEXT ----
+    // ---- FETCH DYNAMIC CONTEXT (CACHED) ----
     const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? '';
     const supabaseKey = Deno.env.get('SUPABASE_ANON_KEY') ?? '';
     let projectsData = [];
-    try {
-      const supabase = createClient(supabaseUrl, supabaseKey);
-      const { data } = await supabase.from('projects').select('name, description, live_link, github_link');
-      if (data) projectsData = data;
-    } catch(e) {
-      console.error("Could not fetch projects", e);
+    
+    // In-memory cache to prevent slow DB queries on every single message
+    if (!globalThis.cachedProjectsData || Date.now() - globalThis.lastCacheTime > 5 * 60 * 1000) {
+      try {
+        const supabase = createClient(supabaseUrl, supabaseKey);
+        const { data } = await supabase.from('projects').select('name, description, live_link, github_link');
+        if (data) {
+          globalThis.cachedProjectsData = data;
+          globalThis.lastCacheTime = Date.now();
+        }
+      } catch(e) {
+        console.error("Could not fetch projects", e);
+      }
     }
+    projectsData = globalThis.cachedProjectsData || [];
 
     // ---- FORMAT PROMPT ----
     const dynamicPrompt = `${SYSTEM_PROMPT}\n\n# DYNAMIC KNOWLEDGE (PORTFOLIO DATA)\n- The following JSON data contains Mohamed's live projects straight from the database. \n- When asked about projects, YOU MUST RELY EXCLUSIVELY ON THIS DATA. \n- Understand that this data updates dynamically, so whatever is here is the ultimate truth. If a user asks about something added to the site, it will be in this JSON.\nProjects Data:\n${JSON.stringify(projectsData)}`;
@@ -261,10 +269,13 @@ serve(async (req) => {
       parts: [{ text: msg.content }]
     }));
 
+    // Start directly with the fastest and smartest available models
     const geminiModels = [
-      "gemini-flash-lite-latest",
-      "gemini-flash-latest",
-      "gemini-2.0-flash"
+      "gemini-3.8-flash-lite",
+      "gemini-flash-lite-3.8",
+      "gemini-2.5-flash",
+      "gemini-2.0-flash",
+      "gemini-1.5-flash"
     ];
 
     let response;
