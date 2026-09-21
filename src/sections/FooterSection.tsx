@@ -69,12 +69,18 @@ export const FooterSection = () => {
         setStatus('idle');
       }
     } catch {
-      // Fallback: If fetch fails (usually due to AdBlockers blocking formsubmit.co), 
-      // submit as a standard HTML form which navigates to their page but works reliably.
+      // Fallback: If fetch fails (usually due to AdBlockers), 
+      // submit via a standard HTML form to a hidden iframe so the page doesn't refresh.
+      const iframeName = 'hidden_iframe_' + Date.now();
+      const iframe = document.createElement('iframe');
+      iframe.name = iframeName;
+      iframe.style.display = 'none';
+      document.body.appendChild(iframe);
+
       const form = document.createElement('form');
       form.method = 'POST';
       form.action = 'https://formsubmit.co/mohamed.ghanem.work@gmail.com';
-      form.target = '_blank'; // Open in new tab to preserve the portfolio page
+      form.target = iframeName;
       
       const emailInput = document.createElement('input');
       emailInput.type = 'hidden';
@@ -91,11 +97,6 @@ export const FooterSection = () => {
       messageInput.name = 'message';
       messageInput.value = formData.message;
 
-      const nextInput = document.createElement('input');
-      nextInput.type = 'hidden';
-      nextInput.name = '_next';
-      nextInput.value = window.location.href; // Try to redirect back
-
       const captchaInput = document.createElement('input');
       captchaInput.type = 'hidden';
       captchaInput.name = '_captcha';
@@ -104,12 +105,16 @@ export const FooterSection = () => {
       form.appendChild(emailInput);
       form.appendChild(subjectInput);
       form.appendChild(messageInput);
-      form.appendChild(nextInput);
       form.appendChild(captchaInput);
       
       document.body.appendChild(form);
       form.submit();
-      document.body.removeChild(form);
+      
+      // Cleanup after a delay to allow submission to complete
+      setTimeout(() => {
+        if (document.body.contains(form)) document.body.removeChild(form);
+        if (document.body.contains(iframe)) document.body.removeChild(iframe);
+      }, 3000);
 
       setFormData({ senderEmail: '', subject: '', message: '' });
       setStatus('sent');
