@@ -69,8 +69,45 @@ export const FooterSection = () => {
         setStatus('idle');
       }
     } catch {
-      setErrorMsg('Network error. Please check your connection and try again.');
-      setStatus('idle');
+      // Fallback: If fetch fails (usually due to AdBlockers blocking formsubmit.co), 
+      // submit as a standard HTML form which navigates to their page but works reliably.
+      const form = document.createElement('form');
+      form.method = 'POST';
+      form.action = 'https://formsubmit.co/mohamed.ghanem.work@gmail.com';
+      form.target = '_blank'; // Open in new tab to preserve the portfolio page
+      
+      const emailInput = document.createElement('input');
+      emailInput.type = 'hidden';
+      emailInput.name = 'email';
+      emailInput.value = formData.senderEmail;
+      
+      const subjectInput = document.createElement('input');
+      subjectInput.type = 'hidden';
+      subjectInput.name = 'subject';
+      subjectInput.value = formData.subject;
+      
+      const messageInput = document.createElement('input');
+      messageInput.type = 'hidden';
+      messageInput.name = 'message';
+      messageInput.value = formData.message;
+
+      const nextInput = document.createElement('input');
+      nextInput.type = 'hidden';
+      nextInput.name = '_next';
+      nextInput.value = window.location.href; // Try to redirect back
+
+      form.appendChild(emailInput);
+      form.appendChild(subjectInput);
+      form.appendChild(messageInput);
+      form.appendChild(nextInput);
+      
+      document.body.appendChild(form);
+      form.submit();
+      document.body.removeChild(form);
+
+      setFormData({ senderEmail: '', subject: '', message: '' });
+      setStatus('sent');
+      timerRef.current = setTimeout(() => setStatus('idle'), 5000);
     }
   };
 
