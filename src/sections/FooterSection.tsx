@@ -96,10 +96,16 @@ export const FooterSection = () => {
       nextInput.name = '_next';
       nextInput.value = window.location.href; // Try to redirect back
 
+      const captchaInput = document.createElement('input');
+      captchaInput.type = 'hidden';
+      captchaInput.name = '_captcha';
+      captchaInput.value = 'false';
+
       form.appendChild(emailInput);
       form.appendChild(subjectInput);
       form.appendChild(messageInput);
       form.appendChild(nextInput);
+      form.appendChild(captchaInput);
       
       document.body.appendChild(form);
       form.submit();
