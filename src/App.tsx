@@ -8,7 +8,6 @@ import { HeroSection } from './sections/HeroSection';
 const AboutSection = lazy(() => import('./sections/AboutSection').then(m => ({ default: m.AboutSection })));
 const ServicesSection = lazy(() => import('./sections/ServicesSection').then(m => ({ default: m.ServicesSection })));
 const ProjectsSection = lazy(() => import('./sections/ProjectsSection').then(m => ({ default: m.ProjectsSection })));
-const TestimonialsSection = lazy(() => import('./sections/TestimonialsSection').then(m => ({ default: m.TestimonialsSection })));
 const FooterSection = lazy(() => import('./sections/FooterSection').then(m => ({ default: m.FooterSection })));
 import { Routes, Route } from 'react-router-dom';
 import { AdminDashboard } from './pages/AdminDashboard';
@@ -86,7 +85,6 @@ function Portfolio() {
           <AboutSection />
           <ServicesSection />
           <ProjectsSection />
-          <TestimonialsSection />
           <FooterSection />
         </Suspense>
       </main>

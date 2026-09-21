@@ -9,7 +9,7 @@ export const HeroSection = ({ isReady = true }: { isReady?: boolean }) => {
   activeTabRef.current = activeTab;
 
   useEffect(() => {
-    const sections = ['hero', 'about', 'services', 'projects', 'testimonials'];
+    const sections = ['hero', 'about', 'services', 'projects'];
     
     const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {

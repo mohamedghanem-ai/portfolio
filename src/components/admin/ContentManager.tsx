@@ -26,8 +26,8 @@ export const ContentManager = () => {
     if (error) {
       setErrorMsg(error.message);
     } else if (data) {
-      // Sort by website order: hero -> services -> projects -> about -> testimonials -> footer
-      const order = ['hero', 'services', 'projects', 'about', 'testimonials', 'footer'];
+      // Sort by website order: hero -> services -> projects -> about -> footer
+      const order = ['hero', 'services', 'projects', 'about', 'footer'];
       const sortedData = [...data]
         .filter(c => c.section_id !== 'contact') // Contact is handled by footer now
         .sort((a, b) => {
