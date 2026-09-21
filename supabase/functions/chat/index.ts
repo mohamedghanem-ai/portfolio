@@ -313,11 +313,9 @@ serve(async (req) => {
       }
       
       lastErrorText = await response.text();
-      const status = response.status;
-      // If the error is high demand (503) or rate limit (429), try the next model.
-      if (status !== 503 && status !== 429 && status !== 500) {
-        break; // Unrecoverable error (e.g. 400 Bad Request), don't retry.
-      }
+      console.warn(`Model ${model} failed with status ${response.status}: ${lastErrorText}`);
+      // ALWAYS try the next model if this one fails (whether it's 404, 429, 500, etc.)
+      continue;
     }
 
     if (response && response.ok) {
