@@ -14,11 +14,5 @@
       <image:title>Mohamed Ghanem - AI &amp; Machine Learning Engineer</image:title>
       <image:caption>Mohamed Ghanem AI Engineer Portfolio Header</image:caption>
     </image:image>
-    
-    <image:image>
-      <image:loc>https://mohamedghanem-ai.vercel.app/gold_robot_trans.png</image:loc>
-      <image:title>Mohamed Ghanem 3D AI Robot Assistant</image:title>
-      <image:caption>3D AI Robot Assistant</image:caption>
-    </image:image>
   </url>
 </urlset>
